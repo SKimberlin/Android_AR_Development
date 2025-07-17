@@ -6,3 +6,4 @@ This project is built using Unity with a focus on augmented reality experiences 
 
 - **Seth D. Kimberlin**
 - **Surya Nandeesh**
+- **Daikwon Raney**
