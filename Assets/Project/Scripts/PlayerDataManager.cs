@@ -54,6 +54,18 @@ public class PlayerDataManager : NetworkBehaviour
         }
     }
 
+    public void OnDisable()
+    {
+        if (IsServer)
+        {
+            allPlayerData.Clear();
+            NetworkManager.Singleton.OnClientConnectedCallback -= AddNewClientToList;
+        }
+        //BulletData.OnHitPlayer -= BulletDataOnOnHitPlayer;
+        //KillPlayer.OnKillPlayer -= KillPlayerOnOnKillPlayer;
+        //RestartGame.OnRestartGame -= RestartGameOnOnRestartGame;
+    }
+
     private void Start()
     {
         NetworkManager.Singleton.OnClientConnectedCallback += AddNewClientToList;

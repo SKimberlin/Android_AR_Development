@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -10,6 +9,8 @@ public class PlaceCharacter : NetworkBehaviour
 {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject placementObject;
+
+    public static event Action characterPlaced;
     private void Start()
     {
         if (!mainCamera) { mainCamera = Camera.main; }
@@ -53,8 +54,8 @@ public class PlaceCharacter : NetworkBehaviour
             }
 
             TouchToRay(touch.position);
-#endif
         }
+#endif
     }
     void TouchToRay(Vector3 touch)
     {
