@@ -55,7 +55,7 @@ public class PlaceCharacter : NetworkBehaviour
             TouchToRay(touch.position);
 #endif
         }
-    }
+    
     void TouchToRay(Vector3 touch)
     {
         Ray ray = mainCamera.ScreenPointToRay(touch);
