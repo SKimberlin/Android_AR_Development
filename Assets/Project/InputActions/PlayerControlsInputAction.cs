@@ -111,9 +111,9 @@ public partial class @PlayerControlsInputAction: IInputActionCollection2, IDispo
                 },
                 {
                     ""name"": ""TouchPress"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""44d4c98c-cd34-4cfb-899a-f9a446989b9b"",
-                    ""expectedControlType"": ""Touch"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -200,7 +200,7 @@ public partial class @PlayerControlsInputAction: IInputActionCollection2, IDispo
                 {
                     ""name"": """",
                     ""id"": ""a1075c0d-fc7b-4af3-b970-1f12c391bbcd"",
-                    ""path"": ""<Touchscreen>/primaryTouch"",
+                    ""path"": ""<Touchscreen>/Press"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

@@ -21,41 +21,41 @@ public class ARSwipe : NetworkBehaviour
         touchPress = playerInput.PlayerControls.TouchPress;
         touchPosition = playerInput.PlayerControls.TouchPosition;
 
-        touchPress.started += OnTouchStarted;
-        touchPress.canceled += OnTouchEnded;
-
         touchPress.Enable();
         touchPosition.Enable();
     }
 
     private void OnDestroy()
     {
-        touchPress.started -= OnTouchStarted;
-        touchPress.canceled -= OnTouchEnded;
-
         touchPress.Disable();
         touchPosition.Disable();
     }
 
-    private void OnTouchStarted(InputAction.CallbackContext ctx)
+    private void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || touchPress == null || touchPosition == null)
+            return;
 
-        startTouchPosition = touchPosition.ReadValue<Vector2>();
-        isSwiping = true;
-    }
+        bool isTouching = touchPress.ReadValue<float>() > 0f;
+        Vector2 currentTouch = touchPosition.ReadValue<Vector2>();
 
-    private void OnTouchEnded(InputAction.CallbackContext ctx)
-    {
-        if (!IsOwner || !isSwiping) return;
-
-        endTouchPosition = touchPosition.ReadValue<Vector2>();
-        isSwiping = false;
-
-        Vector2 swipeVector = endTouchPosition - startTouchPosition;
-        if (swipeVector.magnitude > swipeDistanceThreshold)
+        if (isTouching && !isSwiping)
         {
-            HandleSwipe(swipeVector);
+            // Start swipe
+            isSwiping = true;
+            startTouchPosition = currentTouch;
+        }
+        else if (!isTouching && isSwiping)
+        {
+            // End swipe
+            isSwiping = false;
+            endTouchPosition = currentTouch;
+
+            Vector2 swipeVector = endTouchPosition - startTouchPosition;
+            if (swipeVector.magnitude > swipeDistanceThreshold)
+            {
+                HandleSwipe(swipeVector);
+            }
         }
     }
 
