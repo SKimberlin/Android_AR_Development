@@ -6,6 +6,8 @@ public class PlayerDataManager : NetworkBehaviour
     public static PlayerDataManager Instance;
     private NetworkList<PlayerData> allPlayerData;
 
+    private float startHealth = 100;
+
     private void Awake()
     {
         allPlayerData = new NetworkList<PlayerData>();
@@ -26,6 +28,7 @@ public class PlayerDataManager : NetworkBehaviour
             {
                 PlayerData newData = new PlayerData(
                     allPlayerData[i].clientId,
+                    allPlayerData[i].health,
                     true
                 );
 
@@ -54,18 +57,6 @@ public class PlayerDataManager : NetworkBehaviour
         }
     }
 
-    public void OnDisable()
-    {
-        if (IsServer)
-        {
-            allPlayerData.Clear();
-            NetworkManager.Singleton.OnClientConnectedCallback -= AddNewClientToList;
-        }
-        //BulletData.OnHitPlayer -= BulletDataOnOnHitPlayer;
-        //KillPlayer.OnKillPlayer -= KillPlayerOnOnKillPlayer;
-        //RestartGame.OnRestartGame -= RestartGameOnOnRestartGame;
-    }
-
     private void Start()
     {
         NetworkManager.Singleton.OnClientConnectedCallback += AddNewClientToList;
@@ -82,6 +73,7 @@ public class PlayerDataManager : NetworkBehaviour
 
         PlayerData newPlayerData = new PlayerData();
         newPlayerData.clientId = clientId;
+        newPlayerData.health = startHealth;
         newPlayerData.playerPlaced = false;
 
         if (allPlayerData.Contains(newPlayerData)) return;

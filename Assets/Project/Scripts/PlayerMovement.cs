@@ -9,13 +9,24 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     private CharacterController characterController;
     [SerializeField]
-    private float speed = 1.5f;
+    private float speed = 0.05f;
     [SerializeField]
     private float move_threshhold = 0.01f;
+    [SerializeField]
+    private  float lookAtPointDelta = 2f;
+    private GameObject lookAtPoint;
+    private Camera playerCamera;
     public override void OnNetworkSpawn()
     {
         if (GetComponent<NetworkObject>().IsOwner)
         {
+            playerCamera = Camera.main;
+
+            lookAtPoint = new GameObject();
+
+            lookAtPoint.transform.position = transform.position;
+            lookAtPoint.transform.rotation = transform.rotation;
+
             playerInputControls = GetComponent<PlayerInputControls>();
             playerInputControls.OnMoveInput += PlayerInputControlsOnMoveInput;
         }
@@ -25,7 +36,35 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (inputMovement.magnitude < move_threshhold) return;
 
-        characterController.Move(inputMovement * speed);
+        Vector3 cameraForward = playerCamera.transform.forward;
+        Vector3 cameraRight = playerCamera.transform.right;
+
+        cameraForward.y = 0;
+        cameraRight.y = 0;
+        cameraForward.Normalize();
+        cameraRight.Normalize();
+
+        Vector3 moveDirection = (cameraForward * inputMovement.z) + (cameraRight * inputMovement.x);
+
+        characterController.Move(moveDirection * speed);
+        PlayerLookInMovementDirection(moveDirection);
+    }
+
+    void PlayerLookInMovementDirection(Vector3 inputVector)
+    {
+        Vector3 pointToLookAt = transform.position + (inputVector.normalized * lookAtPointDelta);
+
+        lookAtPoint.transform.position = pointToLookAt;
+
+        transform.LookAt(lookAtPoint.transform);
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (GetComponent<NetworkObject>().IsOwner)
+        {
+            playerInputControls.OnMoveInput -= PlayerInputControlsOnMoveInput;
+        }
     }
 
 }

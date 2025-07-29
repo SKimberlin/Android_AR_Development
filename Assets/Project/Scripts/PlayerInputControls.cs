@@ -10,6 +10,7 @@ public class PlayerInputControls : NetworkBehaviour
 
     public event Action<Vector3> OnMoveInput;
     public event Action OnMoveActionCanceled;
+    public event Action OnAttack1;
     public override void OnNetworkSpawn()
     {
         if (GetComponent<NetworkObject>().IsOwner)
@@ -19,6 +20,7 @@ public class PlayerInputControls : NetworkBehaviour
 
             playerControlsInputAction.PlayerControls.Move.performed += OnMovePerformed;
             playerControlsInputAction.PlayerControls.Move.canceled += OnMoveCanceled;
+
         }
     }
 
@@ -49,4 +51,20 @@ public class PlayerInputControls : NetworkBehaviour
             playerControlsInputAction.PlayerControls.Move.canceled -= OnMoveCanceled;
         }
     }
+
+    public void TriggerSwipeAttack(string direction)
+    {
+        Debug.Log($"Swipe Attack triggered: {direction}");
+
+        switch (direction)
+        {
+            case "Up":
+            case "Down":
+            case "Left":
+            case "Right":
+                OnAttack1?.Invoke(); // Or create a separate swipe-specific event
+                break;
+        }
+    }
+
 }
