@@ -1,56 +1,67 @@
-using System;
-using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using Unity.Netcode;
 
 public class ARSwipe : NetworkBehaviour
 {
-    public PlayerInputControls playerInputControls; // Assign via Inspector
-
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;
-    private float swipeDistanceThreshold = 50f;
     private bool isSwiping = false;
+    private float swipeDistanceThreshold = 50f;
 
-    void Update()
+    private InputAction touchPress;
+    private InputAction touchPosition;
+
+    public PlayerInputControls playerInputControls;
+
+    private void Start()
     {
-        if (IsOwner) HandleInput();
+        var playerInput = playerInputControls.playerControlsInputAction;
+
+        touchPress = playerInput.PlayerControls.TouchPress;
+        touchPosition = playerInput.PlayerControls.TouchPosition;
+
+        touchPress.started += OnTouchStarted;
+        touchPress.canceled += OnTouchEnded;
+
+        touchPress.Enable();
+        touchPosition.Enable();
     }
 
-    private void HandleInput()
+    private void OnDestroy()
     {
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
+        touchPress.started -= OnTouchStarted;
+        touchPress.canceled -= OnTouchEnded;
 
-            switch (touch.phase)
-            {
-                case TouchPhase.Began:
-                    startTouchPosition = touch.position;
-                    isSwiping = true;
-                    break;
-                case TouchPhase.Moved:
-                case TouchPhase.Ended:
-                    if (isSwiping)
-                    {
-                        endTouchPosition = touch.position;
-                        Vector2 swipeVector = endTouchPosition - startTouchPosition;
-                        if (swipeVector.magnitude > swipeDistanceThreshold)
-                        {
-                            HandleSwipe(swipeVector);
-                            isSwiping = false;
-                        }
-                    }
-                    break;
-                case TouchPhase.Canceled:
-                    isSwiping = false;
-                    break;
-            }
+        touchPress.Disable();
+        touchPosition.Disable();
+    }
+
+    private void OnTouchStarted(InputAction.CallbackContext ctx)
+    {
+        if (!IsOwner) return;
+
+        startTouchPosition = touchPosition.ReadValue<Vector2>();
+        isSwiping = true;
+    }
+
+    private void OnTouchEnded(InputAction.CallbackContext ctx)
+    {
+        if (!IsOwner || !isSwiping) return;
+
+        endTouchPosition = touchPosition.ReadValue<Vector2>();
+        isSwiping = false;
+
+        Vector2 swipeVector = endTouchPosition - startTouchPosition;
+        if (swipeVector.magnitude > swipeDistanceThreshold)
+        {
+            HandleSwipe(swipeVector);
         }
     }
 
     private void HandleSwipe(Vector2 swipeVector)
     {
-        Debug.Log("Swiped");
+        Debug.Log($"Swiped: {swipeVector}");
         swipeVector.Normalize();
 
         if (Mathf.Abs(swipeVector.x) > Mathf.Abs(swipeVector.y))

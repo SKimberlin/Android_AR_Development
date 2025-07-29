@@ -5,12 +5,13 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputControls : NetworkBehaviour
 {
-    private PlayerControlsInputAction playerControlsInputAction;
+    public PlayerControlsInputAction playerControlsInputAction { get; private set; }
     Vector3 movementVector;
 
     public event Action<Vector3> OnMoveInput;
     public event Action OnMoveActionCanceled;
     public event Action OnAttack1;
+
     public override void OnNetworkSpawn()
     {
         if (GetComponent<NetworkObject>().IsOwner)

@@ -31,29 +31,30 @@ public class PlaceCharacter : NetworkBehaviour
 #endif
 #if UNITY_ANDROID
 
-        if (Input.touchCount > 0 && Input.touchCount < 2 &&
-            Input.GetTouch(0).phase == UnityEngine.TouchPhase.Began)
-        {
-            Touch touch = Input.GetTouch(0);
+        if (Touchscreen.current == null || Touchscreen.current.touches.Count == 0)
+            return;
 
+        var touch = Touchscreen.current.touches[0];
+
+        if (touch.press.wasPressedThisFrame)
+        {
+            Vector2 touchPosition = touch.position.ReadValue();
+
+            // Create pointer data for UI raycast
             PointerEventData pointerData = new PointerEventData(EventSystem.current);
-            pointerData.position = touch.position;
+            pointerData.position = touchPosition;
 
             List<RaycastResult> results = new List<RaycastResult>();
-
             EventSystem.current.RaycastAll(pointerData, results);
 
             if (results.Count > 0)
-            {
                 return;
-            }
 
-            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) 
-            {
+            if (EventSystem.current.IsPointerOverGameObject(touch.touchId.ReadValue()))
                 return;
-            }
 
-            TouchToRay(touch.position);
+            // Your method to respond to tap
+            TouchToRay(touchPosition);
         }
 #endif
     }
