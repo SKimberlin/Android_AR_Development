@@ -1,6 +1,7 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(PlayerInputControls))]
 public class PlayerMovement : NetworkBehaviour
@@ -50,18 +51,25 @@ public class PlayerMovement : NetworkBehaviour
 
         Debug.Log("Vector: " + inputMovement);
 
-        PlayerLookInMovementDirection(moveDirection);
-
-        transform.position += moveDirection * speed;
+        PlayerLookInMovementDirectionServerRpc(moveDirection);
+        MoveServerRpc(moveDirection * speed);
     }
 
-    void PlayerLookInMovementDirection(Vector3 inputVector)
+    [ServerRpc(RequireOwnership = false)]
+    void PlayerLookInMovementDirectionServerRpc(Vector3 inputVector)
     {
         Vector3 pointToLookAt = transform.position + (inputVector.normalized * lookAtPointDelta);
 
         lookAtPoint.transform.position = pointToLookAt;
 
         transform.LookAt(lookAtPoint.transform);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void MoveServerRpc(Vector3 movement)
+    {
+
+        transform.position += movement;
     }
 
     public override void OnNetworkDespawn()

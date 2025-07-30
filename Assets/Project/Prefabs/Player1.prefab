@@ -121,7 +121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce93373994c6de4eb9fb2f45f7afdee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  characterController: {fileID: 0}
   rb: {fileID: 7723911012276912011}
   speed: 0.02
   move_threshhold: 0.01
