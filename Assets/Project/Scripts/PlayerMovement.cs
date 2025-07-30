@@ -7,15 +7,13 @@ public class PlayerMovement : NetworkBehaviour
 {
     private PlayerInputControls playerInputControls;
     [SerializeField]
-    private CharacterController characterController;
-    [SerializeField]
     private Rigidbody rb;
     [SerializeField]
     private float speed = 0.05f;
     [SerializeField]
     private float move_threshhold = 0.01f;
     [SerializeField]
-    private  float lookAtPointDelta = 2f;
+    private float lookAtPointDelta = 2f;
     private GameObject lookAtPoint;
     private Camera playerCamera;
     public override void OnNetworkSpawn()
@@ -50,8 +48,11 @@ public class PlayerMovement : NetworkBehaviour
 
         Vector3 moveDirection = (cameraForward * inputMovement.z) + (cameraRight * inputMovement.x);
 
-        transform.position += moveDirection * speed;
+        Debug.Log("Vector: " + inputMovement);
+
         PlayerLookInMovementDirection(moveDirection);
+
+        transform.position += moveDirection * speed;
     }
 
     void PlayerLookInMovementDirection(Vector3 inputVector)

@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 5433012673125506408}
   - component: {fileID: 6219913491576593098}
   - component: {fileID: 1241673712407756924}
-  - component: {fileID: 3053453156703149881}
   - component: {fileID: 7723911012276912011}
   - component: {fileID: 2425733142915482708}
   - component: {fileID: 8111767876380995472}
@@ -122,36 +121,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ce93373994c6de4eb9fb2f45f7afdee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  characterController: {fileID: 3053453156703149881}
+  characterController: {fileID: 0}
   rb: {fileID: 7723911012276912011}
   speed: 0.02
   move_threshhold: 0.01
   lookAtPointDelta: 2
---- !u!143 &3053453156703149881
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 524083030946200966}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Height: 3
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1.5, z: 0}
 --- !u!54 &7723911012276912011
 Rigidbody:
   m_ObjectHideFlags: 0

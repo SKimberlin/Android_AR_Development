@@ -14,15 +14,18 @@ public class ARSwipe : NetworkBehaviour
 
     public PlayerInputControls playerInputControls;
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        var playerInput = playerInputControls.playerControlsInputAction;
+        if (GetComponent<NetworkObject>().IsOwner)
+        {
+            var playerInput = playerInputControls.playerControlsInputAction;
 
-        touchPress = playerInput.PlayerControls.TouchPress;
-        touchPosition = playerInput.PlayerControls.TouchPosition;
+            touchPress = playerInput.PlayerControls.TouchPress;
+            touchPosition = playerInput.PlayerControls.TouchPosition;
 
-        touchPress.Enable();
-        touchPosition.Enable();
+            touchPress.Enable();
+            touchPosition.Enable();
+        }
     }
 
     private void OnDestroy()
