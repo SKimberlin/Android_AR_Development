@@ -9,6 +9,9 @@ public class PlaceCharacter : NetworkBehaviour
 {
     [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject placementObject;
+    [SerializeField] private GameObject arenaPrefab;
+
+    private static bool arenaSpawned = false;
 
     public static event Action characterPlaced;
     private void Start()
@@ -65,8 +68,13 @@ public class PlaceCharacter : NetworkBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.collider.CompareTag("ArenaFloor")) // Make sure to tag your arena floor!
+            if (IsHost && !arenaSpawned)
             {
+                SpawnArenaServerRpc(hit.point, Quaternion.identity);
+            }
+            else if (arenaSpawned && hit.collider.CompareTag("ArenaFloor"))
+            {
+                // Place character as usual
                 Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
                 SpawnPlayerServerRpc(hit.point, rotation, NetworkManager.Singleton.LocalClientId);
             }
@@ -83,5 +91,13 @@ public class PlaceCharacter : NetworkBehaviour
         characterNetworkObject.SpawnWithOwnership(callerId);
 
         PlayerDataManager.Instance.AddPlacedPlayer(callerId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    void SpawnArenaServerRpc(Vector3 position, Quaternion rotation)
+    {
+        GameObject arena = Instantiate(arenaPrefab, position, rotation);
+        arena.GetComponent<NetworkObject>().Spawn();
+        arenaSpawned = true;
     }
 }

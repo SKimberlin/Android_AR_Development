@@ -65,30 +65,6 @@ public class StartGameAR : MonoBehaviour
         StartGameButton.interactable = true;
         CreateRoomButton.interactable = false;
         JoinRoomButton.interactable = false;
-
-        if (isHost && spawnedArena == null)
-        {
-            var origin = sharedSpaceManager.SharedArOriginObject;
-            if (origin != null)
-            {
-                spawnedArena = Instantiate(arenaPrefab, origin.transform.position, origin.transform.rotation);
-                var networkObj = spawnedArena.GetComponent<NetworkObject>();
-                if (networkObj != null) networkObj.Spawn();
-                else Debug.LogWarning("Arena prefab missing NetworkObject");
-            }
-            else
-            {
-                Debug.LogWarning("Anchor pose not yet available. Arena spawn deferred.");
-            }
-
-            // Ensure it's a networked object
-            var netObj = spawnedArena.GetComponent<NetworkObject>();
-            if (netObj != null)
-                netObj.Spawn();
-            else
-                Debug.LogWarning("Arena prefab is missing NetworkObject!");
-
-        }
     }
 
     private void StartGame()
@@ -102,7 +78,6 @@ public class StartGameAR : MonoBehaviour
         else
         {
             NetworkManager.Singleton.StartClient();
-            SpawnArena();
         }
     }
 

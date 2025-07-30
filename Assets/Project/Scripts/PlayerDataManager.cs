@@ -101,6 +101,14 @@ public class PlayerDataManager : NetworkBehaviour
                 break;
             }
         }
+
+        SyncReducePlayerHealthClientRpc(tuple.Item2);
+    }
+
+    [ClientRpc]
+    void SyncReducePlayerHealthClientRpc(ulong id)
+    {
+        OnPlayerHealthChange?.Invoke(id);
     }
 
     void AddNewClientToList(ulong clientId)
