@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6959174565771355911}
   - component: {fileID: 2882908200797042746}
   - component: {fileID: 242784337475997794}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ARMeshingPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}

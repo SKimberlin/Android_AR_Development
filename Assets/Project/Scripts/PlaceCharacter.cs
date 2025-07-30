@@ -72,7 +72,7 @@ public class PlaceCharacter : NetworkBehaviour
             {
                 SpawnArenaServerRpc(hit.point, Quaternion.identity);
             }
-            else if (arenaSpawned && hit.collider.CompareTag("ArenaFloor"))
+            else if (hit.collider.CompareTag("ArenaFloor"))
             {
                 // Place character as usual
                 Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);

@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   characterController: {fileID: 3053453156703149881}
   rb: {fileID: 7723911012276912011}
-  speed: 0.01
+  speed: 0.02
   move_threshhold: 0.01
   lookAtPointDelta: 2
 --- !u!143 &3053453156703149881
