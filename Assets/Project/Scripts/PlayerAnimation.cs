@@ -1,21 +1,24 @@
-using System;
+using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerAnimation : NetworkBehaviour
 {
-
     private Animator animator;
     private PlayerInputControls playerInputControls;
     private Rigidbody rb;
 
+    private Vector3 lastPosition;
+
     public override void OnNetworkSpawn()
     {
-        if (GetComponent<NetworkObject>().IsOwner)
+        if (IsOwner)
         {
             animator = GetComponent<Animator>();
             playerInputControls = GetComponent<PlayerInputControls>();
             rb = GetComponent<Rigidbody>();
+
+            lastPosition = transform.position;
 
             playerInputControls.OnAttack1 += OnTriggerPlayerAttack1;
         }
@@ -26,9 +29,12 @@ public class PlayerAnimation : NetworkBehaviour
         animator.SetTrigger("Attack1");
     }
 
-    // Update is called once per frame
     void Update()
     {
-        animator.SetFloat("Speed", rb.linearVelocity.magnitude);
+        if (!IsOwner) return;
+
+        float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
+        animator.SetFloat("Speed", speed);
+        lastPosition = transform.position;
     }
 }

@@ -65,8 +65,11 @@ public class PlaceCharacter : NetworkBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-            SpawnPlayerServerRpc(hit.point, rotation, NetworkManager.Singleton.LocalClientId);
+            if (hit.collider.CompareTag("ArenaFloor")) // Make sure to tag your arena floor!
+            {
+                Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+                SpawnPlayerServerRpc(hit.point, rotation, NetworkManager.Singleton.LocalClientId);
+            }
         }
     }
 

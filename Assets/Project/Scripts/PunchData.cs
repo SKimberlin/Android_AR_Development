@@ -47,13 +47,13 @@ public class PunchData : NetworkBehaviour
         SetPunchActiveServerRpc(false);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
         if (IsServer)
         {
-            if (collision.transform.TryGetComponent(out NetworkObject networkObject))
+            if (other.transform.TryGetComponent(out NetworkObject networkObject))
             {
-                if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+                if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
                 {
                     // Prevent hitting self
                     if (networkObject.OwnerClientId == owner.Value)

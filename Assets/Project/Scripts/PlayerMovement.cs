@@ -9,6 +9,8 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     private CharacterController characterController;
     [SerializeField]
+    private Rigidbody rb;
+    [SerializeField]
     private float speed = 0.05f;
     [SerializeField]
     private float move_threshhold = 0.01f;
@@ -29,6 +31,8 @@ public class PlayerMovement : NetworkBehaviour
 
             playerInputControls = GetComponent<PlayerInputControls>();
             playerInputControls.OnMoveInput += PlayerInputControlsOnMoveInput;
+
+            rb.WakeUp();
         }
     }
 
@@ -46,7 +50,7 @@ public class PlayerMovement : NetworkBehaviour
 
         Vector3 moveDirection = (cameraForward * inputMovement.z) + (cameraRight * inputMovement.x);
 
-        characterController.Move(moveDirection * speed);
+        transform.position += moveDirection * speed;
         PlayerLookInMovementDirection(moveDirection);
     }
 

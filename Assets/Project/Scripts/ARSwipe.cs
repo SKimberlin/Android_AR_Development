@@ -7,7 +7,7 @@ public class ARSwipe : NetworkBehaviour
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;
     private bool isSwiping = false;
-    private float swipeDistanceThreshold = 50f;
+    private float swipeDistanceThreshold = 400f;
 
     private InputAction touchPress;
     private InputAction touchPosition;

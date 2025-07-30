@@ -1,23 +1,24 @@
-using Niantic.Lightship.SharedAR.Colocalization;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using Niantic.Lightship.SharedAR.Colocalization;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class StartGameAR : MonoBehaviour
 {
-    [SerializeField]
-    private SharedSpaceManager sharedSpaceManager;
-    const int maxAmountOfClientsPerRoom = 2;
-
+    [SerializeField] private SharedSpaceManager sharedSpaceManager;
     [SerializeField] private Texture2D targetTexture;
     [SerializeField] private float targetImageSize;
-    private string roomName = "TestRoom";
-
     [SerializeField] private Button StartGameButton;
     [SerializeField] private Button CreateRoomButton;
     [SerializeField] private Button JoinRoomButton;
+    [SerializeField] private GameObject arenaPrefab;
 
+    private const int maxAmountOfClientsPerRoom = 2;
+    private string roomName = "TestRoom";
+    private GameObject spawnedArena;
     private bool isHost;
 
     public static event Action OnStartSharedSpaceHost;
@@ -35,15 +36,58 @@ public class StartGameAR : MonoBehaviour
         JoinRoomButton.onClick.AddListener(JoinGameClient);
 
         StartGameButton.interactable = false;
+
+        BlitImageForColocalization.OnTextureRendered += BlitImageForColocalizationOnTextureRendered;
+    }
+
+    private void OnDestroy()
+    {
+        sharedSpaceManager.sharedSpaceManagerStateChanged -= SharedSpaceManagerOnSharedSpaceManagerStateChanged;
+        BlitImageForColocalization.OnTextureRendered -= BlitImageForColocalizationOnTextureRendered;
+    }
+
+    private void BlitImageForColocalizationOnTextureRendered(Texture2D texture)
+    {
+        SetTargetImage(texture);
+        StartSharedSpace();
+    }
+
+    void SetTargetImage(Texture2D texture2D)
+    {
+        targetTexture = texture2D;
     }
 
     private void SharedSpaceManagerOnSharedSpaceManagerStateChanged(SharedSpaceManager.SharedSpaceManagerStateChangeEventArgs obj)
     {
-        if (obj.Tracking)
+        if (!obj.Tracking)
+            return;
+
+        StartGameButton.interactable = true;
+        CreateRoomButton.interactable = false;
+        JoinRoomButton.interactable = false;
+
+        if (isHost && spawnedArena == null)
         {
-            StartGameButton.interactable = true;
-            CreateRoomButton.interactable = false;
-            JoinRoomButton.interactable = false;
+            var origin = sharedSpaceManager.SharedArOriginObject;
+            if (origin != null)
+            {
+                spawnedArena = Instantiate(arenaPrefab, origin.transform.position, origin.transform.rotation);
+                var networkObj = spawnedArena.GetComponent<NetworkObject>();
+                if (networkObj != null) networkObj.Spawn();
+                else Debug.LogWarning("Arena prefab missing NetworkObject");
+            }
+            else
+            {
+                Debug.LogWarning("Anchor pose not yet available. Arena spawn deferred.");
+            }
+
+            // Ensure it's a networked object
+            var netObj = spawnedArena.GetComponent<NetworkObject>();
+            if (netObj != null)
+                netObj.Spawn();
+            else
+                Debug.LogWarning("Arena prefab is missing NetworkObject!");
+
         }
     }
 
@@ -58,6 +102,27 @@ public class StartGameAR : MonoBehaviour
         else
         {
             NetworkManager.Singleton.StartClient();
+            SpawnArena();
+        }
+    }
+
+    private void SpawnArena()
+    {
+        if (spawnedArena != null) return;
+
+        var origin = sharedSpaceManager.SharedArOriginObject;
+        if (origin != null)
+        {
+            spawnedArena = Instantiate(arenaPrefab, origin.transform.position, origin.transform.rotation);
+            var netObj = spawnedArena.GetComponent<NetworkObject>();
+            if (netObj != null)
+                netObj.Spawn();
+            else
+                Debug.LogWarning("Arena prefab is missing NetworkObject!");
+        }
+        else
+        {
+            Debug.LogWarning("Shared AR origin not ready; cannot spawn arena.");
         }
     }
 
@@ -74,10 +139,8 @@ public class StartGameAR : MonoBehaviour
                 "MockColocalizationDemo"
             );
 
-            sharedSpaceManager.StartSharedSpace( mockTrackingArgs, roomArgs );
-            return;
+            sharedSpaceManager.StartSharedSpace(mockTrackingArgs, roomArgs);
         }
-
         else if (sharedSpaceManager.GetColocalizationType() == SharedSpaceManager.ColocalizationType.ImageTrackingColocalization)
         {
             var imageTrackingOptions = ISharedSpaceTrackingOptions.CreateImageTrackingOptions(targetTexture, targetImageSize);
@@ -88,7 +151,6 @@ public class StartGameAR : MonoBehaviour
             );
 
             sharedSpaceManager.StartSharedSpace(imageTrackingOptions, roomArgs);
-            return;
         }
     }
 
